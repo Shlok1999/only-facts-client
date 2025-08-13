@@ -62,7 +62,9 @@ const Homepage = ({ onNavigate }) => {
       <header className="py-4 bg-gray-900 shadow-md sticky top-0 z-50">
         <div className="container mx-auto px-4 flex justify-between items-center">
           <div className="flex items-center space-x-2">
-            <span className="text-3xl text-yellow-400">⚡</span>
+            <span className="text-3xl text-yellow-400">
+              <img src={require("./assets/OnlyFacts.png")} alt="Only Facts" className="h-8" />
+            </span>
             <h1 className="text-2xl font-bold">Only Facts</h1>
           </div>
           <button
@@ -168,65 +170,65 @@ const Homepage = ({ onNavigate }) => {
 
 // A single news card component
 function NewsCard({ article, index, total }) {
-    const [isExpanded, setIsExpanded] = useState(false);
-    const summaryLimit = 200;
-    const isTruncated = article.summary.length > summaryLimit;
+  const [isExpanded, setIsExpanded] = useState(false);
+  const summaryLimit = 200;
+  const isTruncated = article.summary.length > summaryLimit;
 
-    const renderTextWithBold = (text) => {
-        // This function splits the text by '**' and alternates between bold and regular text
-        const parts = text.split('**');
-        return parts.map((part, i) => {
-            if (i % 2 === 1) {
-                return <b key={i}>{part}</b>;
-            }
-            return <span key={i}>{part}</span>;
-        });
-    };
+  const renderTextWithBold = (text) => {
+    // This function splits the text by '**' and alternates between bold and regular text
+    const parts = text.split('**');
+    return parts.map((part, i) => {
+      if (i % 2 === 1) {
+        return <b key={i}>{part}</b>;
+      }
+      return <span key={i}>{part}</span>;
+    });
+  };
 
-    return (
-        <div className="bg-gray-800 shadow-xl rounded-xl p-6 border border-gray-700 relative transition-transform transform hover:-translate-y-1">
-            {/* Thread Counter */}
-            <div className="absolute top-4 right-4 text-sm font-bold text-gray-500">
-                {index + 1}/{total}
-            </div>
+  return (
+    <div className="bg-gray-800 shadow-xl rounded-xl p-6 border border-gray-700 relative transition-transform transform hover:-translate-y-1">
+      {/* Thread Counter */}
+      <div className="absolute top-4 right-4 text-sm font-bold text-gray-500">
+        {index + 1}/{total}
+      </div>
 
-            {/* Small Heading: Source */}
-            <h4 className="text-sm font-semibold text-yellow-400 mb-2 uppercase tracking-wider">{article.source}</h4>
-            
-            {/* Big Heading: Title */}
-            <h2 className="text-2xl font-bold mb-3 text-gray-100">
-                {renderTextWithBold(article.title)}
-            </h2>
-            
-            {/* Summary with Read More toggle */}
-            <p className="text-base text-gray-300 mb-4 leading-relaxed">
-                {isExpanded 
-                    ? renderTextWithBold(article.summary)
-                    : renderTextWithBold(article.summary.slice(0, summaryLimit))}
-                {isTruncated && !isExpanded && "..."}
-                {isTruncated && (
-                    <button
-                        onClick={() => setIsExpanded(!isExpanded)}
-                        className="text-yellow-400 hover:text-yellow-300 font-semibold ml-2"
-                    >
-                        {isExpanded ? "Read Less" : "Read More"}
-                    </button>
-                )}
-            </p>
-            
-            {/* Read Full Article Button */}
-            <div className="flex gap-3 mt-4">
-                <a
-                    href={article.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-block bg-yellow-500 hover:bg-yellow-600 text-gray-900 px-5 py-2 rounded-full text-sm font-bold transition-colors duration-300"
-                >
-                    Read Full Article
-                </a>
-            </div>
-        </div>
-    );
+      {/* Small Heading: Source */}
+      <h4 className="text-sm font-semibold text-yellow-400 mb-2 uppercase tracking-wider">{article.source}</h4>
+
+      {/* Big Heading: Title */}
+      <h2 className="text-2xl font-bold mb-3 text-gray-100">
+        {renderTextWithBold(article.title)}
+      </h2>
+
+      {/* Summary with Read More toggle */}
+      <p className="text-base text-gray-300 mb-4 leading-relaxed">
+        {isExpanded
+          ? renderTextWithBold(article.summary)
+          : renderTextWithBold(article.summary.slice(0, summaryLimit))}
+        {isTruncated && !isExpanded && "..."}
+        {isTruncated && (
+          <button
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="text-yellow-400 hover:text-yellow-300 font-semibold ml-2"
+          >
+            {isExpanded ? "Read Less" : "Read More"}
+          </button>
+        )}
+      </p>
+
+      {/* Read Full Article Button */}
+      <div className="flex gap-3 mt-4">
+        <a
+          href={article.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block bg-yellow-500 hover:bg-yellow-600 text-gray-900 px-5 py-2 rounded-full text-sm font-bold transition-colors duration-300"
+        >
+          Read Full Article
+        </a>
+      </div>
+    </div>
+  );
 }
 
 
@@ -314,26 +316,26 @@ const SearchResults = ({ articles, isLoading, topic, handleDownloadPdf, isDownlo
 const HistorySidebar = ({ history, onHistoryClick, onClear, onClose, isOpen }) => {
   return createPortal(
     <>
-      <div 
+      <div
         className={`fixed top-0 right-0 h-full w-80 bg-gray-900 shadow-2xl z-[110] transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'} flex flex-col border-l border-gray-700`}
       >
         <div className="flex justify-between items-center p-4 border-b border-gray-700">
           <h3 className="text-lg font-semibold text-gray-200">Search History</h3>
-          <button 
-            onClick={onClose} 
+          <button
+            onClick={onClose}
             className="text-gray-400 p-1 rounded-full hover:bg-gray-700 hover:text-white transition-colors"
           >
             <X size={20} />
           </button>
         </div>
-        
+
         <div className="flex-1 overflow-y-auto">
           {history.length > 0 ? (
             <ul className="divide-y divide-gray-700">
               {history.map((item, index) => (
                 <li key={index}>
-                  <button 
-                    onClick={() => onHistoryClick(item)} 
+                  <button
+                    onClick={() => onHistoryClick(item)}
                     className="w-full text-left p-3 hover:bg-gray-800 transition-colors text-gray-300 flex items-start gap-3"
                   >
                     <Clock size={16} className="flex-shrink-0 mt-0.5 text-gray-500" />
@@ -349,10 +351,10 @@ const HistorySidebar = ({ history, onHistoryClick, onClear, onClose, isOpen }) =
             </div>
           )}
         </div>
-        
+
         {history.length > 0 && (
           <div className="p-4 border-t border-gray-700">
-            <button 
+            <button
               onClick={onClear}
               className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-gray-200 rounded-md transition-colors"
             >
@@ -362,11 +364,11 @@ const HistorySidebar = ({ history, onHistoryClick, onClear, onClose, isOpen }) =
           </div>
         )}
       </div>
-      
+
       {/* Overlay */}
       {isOpen && (
-        <div 
-          onClick={onClose} 
+        <div
+          onClick={onClose}
           className="fixed inset-0 bg-black bg-opacity-50 z-[105] backdrop-blur-sm"
         ></div>
       )}
@@ -377,7 +379,7 @@ const HistorySidebar = ({ history, onHistoryClick, onClear, onClose, isOpen }) =
 
 // The new Search Page component, styled with Tailwind CSS
 const SearchPage = ({ onNavigate }) => {
-    const url = "https://only-facts.onrender.com"
+  const url = "https://only-facts.onrender.com"
 
   const [topic, setTopic] = useState('');
   const [articles, setArticles] = useState([]);
@@ -390,13 +392,13 @@ const SearchPage = ({ onNavigate }) => {
   const [articlesCache, setArticlesCache] = useLocalStorage('articlesCache', {});
   // Handles the search action
   // Core search logic
-  const performSearch = async (searchTerm) => {
+  const performSearch = async (searchTerm) => {
     if (!searchTerm.trim()) {
       setError('Please enter a topic to search.');
       setShowModal(true);
       return;
     }
-    
+
     // Check local storage cache first
     if (articlesCache[searchTerm.toLowerCase()]) {
       setArticles(articlesCache[searchTerm.toLowerCase()]);
@@ -421,15 +423,15 @@ const SearchPage = ({ onNavigate }) => {
       }
 
       setArticles(data.summaries);
-      
+
       // Update the history and cache
       setHistory(prevHistory => {
         const updatedHistory = [searchTerm, ...prevHistory.filter(item => item.toLowerCase() !== searchTerm.toLowerCase())];
         return updatedHistory.slice(0, 20); // Keep latest 20 searches
       });
       setArticlesCache(prevCache => ({
-          ...prevCache,
-          [searchTerm.toLowerCase()]: data.summaries,
+        ...prevCache,
+        [searchTerm.toLowerCase()]: data.summaries,
       }));
 
     } catch (err) {
@@ -452,7 +454,7 @@ const SearchPage = ({ onNavigate }) => {
     setTopic(historyTopic);
     performSearch(historyTopic);
   };
-  
+
   // Clears all history and cache
   const handleClearHistory = () => {
     setHistory([]);
@@ -461,88 +463,88 @@ const SearchPage = ({ onNavigate }) => {
   };
 
   const handleDownloadPdf = async () => {
-  setIsDownloading(true);
-  setError('');
+    setIsDownloading(true);
+    setError('');
 
-  try {
-    const doc = new jsPDF({ unit: 'pt', format: 'a4' }); // A4 standard paper
-    const margin = 50;
-    const lineHeight = 18;
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
-    let y = margin;
+    try {
+      const doc = new jsPDF({ unit: 'pt', format: 'a4' }); // A4 standard paper
+      const margin = 50;
+      const lineHeight = 18;
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      let y = margin;
 
-    // ===== HEADER =====
-    doc.setFont('times', 'bold');
-    doc.setFontSize(20);
-    doc.text(`Research Summary: ${topic}`, margin, y);
-    y += 25;
-
-    doc.setFont('times', 'italic');
-    doc.setFontSize(12);
-    doc.text(`Generated on: ${new Date().toLocaleDateString()}`, margin, y);
-    y += 15;
-
-    doc.setDrawColor(0);
-    doc.setLineWidth(0.5);
-    doc.line(margin, y, pageWidth - margin, y); // horizontal line
-    y += 20;
-
-    // ===== ARTICLES =====
-    articles.forEach((article, index) => {
-      // New page check
-      if (y > pageHeight - 100) {
-        doc.addPage();
-        y = margin;
-      }
-
-      // Article number + title
+      // ===== HEADER =====
       doc.setFont('times', 'bold');
-      doc.setFontSize(14);
-      doc.text(`${index + 1}. ${article.title}`, margin, y);
-      y += lineHeight;
-
-      // Source
-      doc.setFont('times', 'italic');
-      doc.setFontSize(11);
-      doc.text(`Source: ${article.source}`, margin, y);
-      y += lineHeight;
-
-      // Summary (justified paragraphs)
-      doc.setFont('times', 'normal');
-      doc.setFontSize(12);
-      const summaryLines = doc.splitTextToSize(article.summary, pageWidth - margin * 2);
-      summaryLines.forEach(line => {
-        doc.text(line, margin, y, { align: 'justify' });
-        y += lineHeight;
-      });
-
-      y += 5;
-
-      // Read full article link
-      doc.setTextColor(0, 0, 255);
-      doc.textWithLink('Read full article', margin, y, { url: article.url });
-      doc.setTextColor(0, 0, 0);
+      doc.setFontSize(20);
+      doc.text(`Research Summary: ${topic}`, margin, y);
       y += 25;
 
-      // Section divider
-      doc.setDrawColor(200);
-      doc.setLineWidth(0.3);
-      doc.line(margin, y, pageWidth - margin, y);
+      doc.setFont('times', 'italic');
+      doc.setFontSize(12);
+      doc.text(`Generated on: ${new Date().toLocaleDateString()}`, margin, y);
       y += 15;
-    });
 
-    // ===== SAVE PDF =====
-    doc.save(`${topic.replace(/\s+/g, '_') || 'news'}_thread.pdf`);
+      doc.setDrawColor(0);
+      doc.setLineWidth(0.5);
+      doc.line(margin, y, pageWidth - margin, y); // horizontal line
+      y += 20;
 
-  } catch (err) {
-    console.error("Download Error:", err);
-    setError("Failed to download PDF. Please try again.");
-    setShowModal(true);
-  } finally {
-    setIsDownloading(false);
-  }
-};
+      // ===== ARTICLES =====
+      articles.forEach((article, index) => {
+        // New page check
+        if (y > pageHeight - 100) {
+          doc.addPage();
+          y = margin;
+        }
+
+        // Article number + title
+        doc.setFont('times', 'bold');
+        doc.setFontSize(14);
+        doc.text(`${index + 1}. ${article.title}`, margin, y);
+        y += lineHeight;
+
+        // Source
+        doc.setFont('times', 'italic');
+        doc.setFontSize(11);
+        doc.text(`Source: ${article.source}`, margin, y);
+        y += lineHeight;
+
+        // Summary (justified paragraphs)
+        doc.setFont('times', 'normal');
+        doc.setFontSize(12);
+        const summaryLines = doc.splitTextToSize(article.summary, pageWidth - margin * 2);
+        summaryLines.forEach(line => {
+          doc.text(line, margin, y, { align: 'justify' });
+          y += lineHeight;
+        });
+
+        y += 5;
+
+        // Read full article link
+        doc.setTextColor(0, 0, 255);
+        doc.textWithLink('Read full article', margin, y, { url: article.url });
+        doc.setTextColor(0, 0, 0);
+        y += 25;
+
+        // Section divider
+        doc.setDrawColor(200);
+        doc.setLineWidth(0.3);
+        doc.line(margin, y, pageWidth - margin, y);
+        y += 15;
+      });
+
+      // ===== SAVE PDF =====
+      doc.save(`${topic.replace(/\s+/g, '_') || 'news'}_thread.pdf`);
+
+    } catch (err) {
+      console.error("Download Error:", err);
+      setError("Failed to download PDF. Please try again.");
+      setShowModal(true);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
 
 
 
@@ -569,28 +571,30 @@ const SearchPage = ({ onNavigate }) => {
     <div className="min-h-screen bg-gray-900 text-gray-200 font-sans flex flex-col">
       {/* Header section for the search page */}
       <header className="py-4 bg-gray-900 shadow-md sticky top-0 z-50">
-  <div className="container mx-auto px-4 flex justify-between items-center">
-    <div className="flex items-center space-x-2">
-      <span className="text-3xl text-yellow-400">⚡</span>
-      <h1 className="text-2xl font-bold">Only Facts</h1>
-    </div>
-    <div className="flex items-center space-x-3">
-      <button
-        onClick={() => setIsHistoryOpen(true)}
-        className="flex items-center gap-2 px-4 py-2 bg-gray-800 text-gray-200 font-semibold rounded-full shadow-lg hover:bg-gray-700 transition-colors duration-300"
-      >
-        <Clock size={18} />
-        Show History
-      </button>
-      <button
-        onClick={() => onNavigate('home')}
-        className="px-4 py-2 bg-gray-800 text-gray-200 font-semibold rounded-full shadow-lg hover:bg-gray-700 transition-colors duration-300"
-      >
-        Back to Home
-      </button>
-    </div>
-  </div>
-</header>
+        <div className="container mx-auto px-4 flex justify-between items-center">
+          <div className="flex items-center space-x-2">
+            <span className="text-3xl text-yellow-400">
+              <img src={require('./assets/OnlyFacts.png')} alt="Only Facts" className="h-8" />
+            </span>
+            <h1 className="text-2xl font-bold">Only Facts</h1>
+          </div>
+          <div className="flex items-center space-x-3">
+            <button
+              onClick={() => setIsHistoryOpen(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-gray-800 text-gray-200 font-semibold rounded-full shadow-lg hover:bg-gray-700 transition-colors duration-300"
+            >
+              <Clock size={18} />
+              Show History
+            </button>
+            <button
+              onClick={() => onNavigate('home')}
+              className="px-4 py-2 bg-gray-800 text-gray-200 font-semibold rounded-full shadow-lg hover:bg-gray-700 transition-colors duration-300"
+            >
+              Back to Home
+            </button>
+          </div>
+        </div>
+      </header>
 
       <main className="flex-grow container mx-auto px-4 py-8">
         <h2 className="text-3xl sm:text-4xl font-bold text-center mb-8">Discover News Threads</h2>
