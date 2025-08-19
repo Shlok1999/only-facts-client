@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import jsPDF from 'jspdf';
 import { createPortal } from 'react-dom';
-import {HistorySidebar} from '../Portal/HistorySidebar';
-import {SearchResults} from '../Portal/SearchResults';
-import {SearchForm} from '../Portal/SearchForm';
+import { HistorySidebar } from '../Portal/HistorySidebar';
+import { SearchResults } from '../Portal/SearchResults';
+import { SearchForm } from '../Portal/SearchForm';
 import { Clock } from 'lucide-react';
 function useLocalStorage(key, initialValue) {
   const [storedValue, setStoredValue] = useState(() => {
@@ -35,7 +35,8 @@ function useLocalStorage(key, initialValue) {
 }
 
 export const SearchPage = ({ onNavigate }) => {
-  const url = "https://only-facts.onrender.com"
+  // const url = "https://only-facts.onrender.com"
+  const url = "http://localhost:5000"
 
   const [topic, setTopic] = useState('');
   const [articles, setArticles] = useState([]);
@@ -119,88 +120,125 @@ export const SearchPage = ({ onNavigate }) => {
   };
 
   const handleDownloadPdf = async () => {
-    setIsDownloading(true);
-    setError('');
+  setIsDownloading(true);
+  setError('');
 
-    try {
-      const doc = new jsPDF({ unit: 'pt', format: 'a4' }); // A4 standard paper
-      const margin = 50;
-      const lineHeight = 18;
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const pageHeight = doc.internal.pageSize.getHeight();
-      let y = margin;
+  try {
+    const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+    const margin = 20;
+    const lineHeight = 18;
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    let y = margin;
 
-      // ===== HEADER =====
-      doc.setFont('times', 'bold');
-      doc.setFontSize(20);
-      doc.text(`Research Summary: ${topic}`, margin, y);
-      y += 25;
+    // ===== COVER PAGE =====
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(28);
+    doc.text(`Research Summary`, pageWidth / 2, y + 60, { align: 'center' });
 
-      doc.setFont('times', 'italic');
+    doc.setFontSize(20);
+    doc.setFont('helvetica', 'normal');
+    const topicLines = doc.splitTextToSize(topic, pageWidth - margin * 2);
+    doc.text(topicLines, pageWidth / 2, y + 110, { align: 'center' });
+
+    doc.setFontSize(12);
+    doc.text(`Generated on: ${new Date().toLocaleDateString()}`, pageWidth / 2, y + 150, { align: 'center' });
+
+    // Decorative line
+    doc.setDrawColor(180);
+    doc.setLineWidth(0.8);
+    doc.line(margin, y + 180, pageWidth - margin, y + 180);
+
+    doc.addPage(); // Start content
+    y = margin;
+
+    // ===== HEADER =====
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(16);
+    doc.text("Articles Summary", margin, y);
+    y += 25;
+
+    // ===== ARTICLES =====
+    articles.forEach((article, index) => {
+      if (y > pageHeight - 100) {
+        addFooter(doc, pageWidth, pageHeight);
+        doc.addPage();
+        y = margin;
+      }
+
+      // --- Title (wrap inside margins) ---
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(14);
+      const titleLines = doc.splitTextToSize(
+        `${index + 1}. ${article.title}`,
+        pageWidth - margin * 2
+      );
+      doc.text(titleLines, margin, y);
+      y += titleLines.length * lineHeight;
+
+      // --- Metadata (wrap if long) ---
+      doc.setFont('helvetica', 'italic');
+      doc.setFontSize(11);
+      doc.setTextColor(100);
+      const metaLines = doc.splitTextToSize(
+        `Source: ${article.source} | Date: ${new Date(article.date).toLocaleDateString()}`,
+        pageWidth - margin * 2
+      );
+      doc.text(metaLines, margin, y);
+      y += metaLines.length * lineHeight;
+      doc.setTextColor(0, 0, 0);
+
+      // --- Summary (wrap + justify) ---
+      doc.setFont('helvetica', 'normal');
       doc.setFontSize(12);
-      doc.text(`Generated on: ${new Date().toLocaleDateString()}`, margin, y);
-      y += 15;
-
-      doc.setDrawColor(0);
-      doc.setLineWidth(0.5);
-      doc.line(margin, y, pageWidth - margin, y); // horizontal line
-      y += 20;
-
-      // ===== ARTICLES =====
-      articles.forEach((article, index) => {
-        // New page check
-        if (y > pageHeight - 100) {
-          doc.addPage();
-          y = margin;
-        }
-
-        // Article number + title
-        doc.setFont('times', 'bold');
-        doc.setFontSize(14);
-        doc.text(`${index + 1}. ${article.title}`, margin, y);
+      const summaryLines = doc.splitTextToSize(article.summary, pageWidth - margin * 2);
+      summaryLines.forEach(line => {
+        doc.text(line, margin, y, { align: 'justify' });
         y += lineHeight;
-
-        // Source
-        doc.setFont('times', 'italic');
-        doc.setFontSize(11);
-        doc.text(`Source: ${article.source}`, margin, y);
-        y += lineHeight;
-
-        // Summary (justified paragraphs)
-        doc.setFont('times', 'normal');
-        doc.setFontSize(12);
-        const summaryLines = doc.splitTextToSize(article.summary, pageWidth - margin * 2);
-        summaryLines.forEach(line => {
-          doc.text(line, margin, y, { align: 'justify' });
-          y += lineHeight;
-        });
-
-        y += 5;
-
-        // Read full article link
-        doc.setTextColor(0, 0, 255);
-        doc.textWithLink('Read full article', margin, y, { url: article.url });
-        doc.setTextColor(0, 0, 0);
-        y += 25;
-
-        // Section divider
-        doc.setDrawColor(200);
-        doc.setLineWidth(0.3);
-        doc.line(margin, y, pageWidth - margin, y);
-        y += 15;
       });
 
-      // ===== SAVE PDF =====
-      doc.save(`${topic.replace(/\s+/g, '_') || 'news'}_thread.pdf`);
+      y += 5;
 
-    } catch (err) {
-      console.error("Download Error:", err);
-      setError("Failed to download PDF. Please try again.");
-      setShowModal(true);
-    } finally {
-      setIsDownloading(false);
-    }
-  };
+      // --- Link ---
+      doc.setTextColor(0, 0, 255);
+      doc.textWithLink('Read full article', margin, y, { url: article.url });
+      doc.setTextColor(0, 0, 0);
+      y += 25;
+
+      // --- Divider ---
+      doc.setDrawColor(220);
+      doc.setLineWidth(0.5);
+      doc.line(margin, y, pageWidth - margin, y);
+      y += 20;
+    });
+
+    // ===== FOOTER =====
+    addFooter(doc, pageWidth, pageHeight);
+
+    // SAVE PDF
+    doc.save(`${topic.replace(/\s+/g, '_') || 'news'}_thread.pdf`);
+
+  } catch (err) {
+    console.error("Download Error:", err);
+    setError("Failed to download PDF. Please try again.");
+    setShowModal(true);
+  } finally {
+    setIsDownloading(false);
+  }
+};
+
+// ===== FOOTER HELPER =====
+function addFooter(doc, pageWidth, pageHeight) {
+  const pageNumber = doc.internal.getNumberOfPages();
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'italic');
+  doc.setTextColor(100);
+  doc.text(`Page ${pageNumber}`, pageWidth - 60, pageHeight - 30);
+  doc.text("Generated by FactsOnly AI", 50, pageHeight - 30);
+}
+
+
+
 
 
 
