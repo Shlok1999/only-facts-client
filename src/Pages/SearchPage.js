@@ -35,8 +35,8 @@ function useLocalStorage(key, initialValue) {
 }
 
 export const SearchPage = ({ onNavigate }) => {
-  // const url = "https://only-facts.onrender.com"
-  const url = "http://localhost:5000"
+  const url = "https://only-facts.onrender.com"
+  // const url = "http://localhost:5000"
 
   const [topic, setTopic] = useState('');
   const [articles, setArticles] = useState([]);
